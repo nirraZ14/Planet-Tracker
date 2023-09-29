@@ -102,23 +102,25 @@ try:
         relativeVelocity=(futureDistance - distanceInM)/ float(delta)
         iluminate=almanac.fraction_illuminated(planets,targetPlanet,t)  # Return the fraction of the target’s disc that is illuminated.
 
-        if args.freq != 0:
-            doppler_freq=pt.doppler_shift(float(args.freq),relativeVelocity)
-            dopplerShift=doppler_freq- float(args.freq)     # Change in frequency
-            print("Frequency: {} Hz".format(args.freq))
-            print("Doppler Frequency: {:2f} Hz".format(doppler_freq))
-            print("Doppler Shift: {:2f} Hz".format(doppler_freq))
+        
 
 
         print("Tracking {}".format(targetPlanet))
         print("Time: {} (UTC+ {})".format(local, offset))
 
-        print("Azimuth: {:.2f}".format(azi))
-        print("Elevation: {:.2f}".format(ele))
+        print("\nAzimuth: {:.2f} degrees".format(azi))
+        print("Elevation: {:.2f} degrees".format(ele))
 
-        print("Distance in miles: {} miles\nDistance in kilometers: {:2f} km".format(distanceInMiles, distanceInKm))
+        print("\nDistance in miles: {:.2f} miles\nDistance in kilometers: {:.2f} km".format(distanceInMiles, distanceInKm))
         print("Relative velocity:{:.2f} m/s".format(relativeVelocity))
         print("Percentage Illumination: {:.2f} %".format(iluminate * 100.0))
+        
+        if args.freq != 0:
+            doppler_freq=pt.doppler_shift(float(args.freq),relativeVelocity)
+            dopplerShift=doppler_freq- float(args.freq)     # Change in frequency
+            print("\nFrequency: {} Hz".format(args.freq))
+            print("Doppler Frequency: {:2f} Hz".format(doppler_freq))
+            print("Doppler Shift: {:2f} Hz".format(doppler_freq))
 
         # local zone
         local_zone = get_localzone()

@@ -9,10 +9,7 @@ import pytz
 
 # Show Menu
 
-parser = argparse.ArgumentParser(
-   add_help=False,
-   formatter_class=argparse.RawDescriptionHelpFormatter, # This will fix description and epilog format
-   epilog="Examples: %(prog)s -listbodies")
+parser = argparse.ArgumentParser(description="Solar system tracker")
 parser.add_argument("--body", help="Planet to track from skyfield library", default="")
 
 # Station Location
@@ -48,17 +45,20 @@ if args.listbodies:
 
 elevation=int(args.elevation)
 targetPlanet=args.body
+
+earth=planets['earth']
 try:
     target=planets[targetPlanet]
-except:
+except Exception as e:
     try:
-        targetPlanet=targetPlanet + 'barycenter'
+        targetPlanet=targetPlanet + ' barycenter'
         target=planets[targetPlanet]
     except:
         print("Error: Unknown planet: {}".format(targetPlanet))
+        print(str(e))
 
         exit(1)
-earth=planets['earth']
+
 if (args.lat==-999.0 or args.lon==-999.0):
         print("ERROR: Latitude and Longitude are required.")
         exit(1)
@@ -95,17 +95,15 @@ try:
 
         futureT=ts.utc(futuret.year, futuret.month, futuret.day, futuret.hour, futuret.minute, futuret.second)
         futureaU=observer.at(futureT).observe(target)
-        azimuthf, elevationf, distancef=futureaU.apparent().altaz()
+        azimuth, elevation, distance=futureaU.apparent().altaz()
 
-        futureDistance=distancef.to('m').value
+        futureDistance=distance.to('m').value
         
         relativeVelocity=(futureDistance - distanceInM)/ float(delta)
-        iluminate=almanac.fraction_illuminated(planets,targetPlanet,t)  # Return the fraction of the target’s disc that is illuminated.
-
-        
+        iluminate=almanac.fraction_illuminated(planets,targetPlanet,t)*100.0  # Return the fraction of the target’s disc that is illuminated.
 
 
-        print("Tracking {}".format(targetPlanet))
+        print("Tracking {}".format(args.body))
         print("Time: {} (UTC+ {})".format(local, offset))
 
         print("\nAzimuth: {:.2f} degrees".format(azi))
@@ -113,14 +111,14 @@ try:
 
         print("\nDistance in miles: {:.2f} miles\nDistance in kilometers: {:.2f} km".format(distanceInMiles, distanceInKm))
         print("Relative velocity:{:.2f} m/s".format(relativeVelocity))
-        print("Percentage Illumination: {:.2f} %".format(iluminate * 100.0))
+        print("Percentage Illumination: {:.2f} %".format(iluminate))
         
         if args.freq != 0:
             doppler_freq=pt.doppler_shift(float(args.freq),relativeVelocity)
             dopplerShift=doppler_freq- float(args.freq)     # Change in frequency
             print("\nFrequency: {} Hz".format(args.freq))
             print("Doppler Frequency: {:2f} Hz".format(doppler_freq))
-            print("Doppler Shift: {:2f} Hz".format(doppler_freq))
+            print("Doppler Shift: {:2f} Hz".format(dopplerShift))
 
         # local zone
         local_zone = get_localzone()
@@ -171,7 +169,7 @@ try:
         if fall_t is not None:
                 print("Target Set: {} [{}]".format(fall_t.astimezone(local_zone).strftime('%d/%m/%Y %H:%M:%S'), str(local_zone)))
         else:
-                print("\nTarget Set time is not found")
+                print("\nError: Target Set time is not found")
 
 
 except KeyboardInterrupt:

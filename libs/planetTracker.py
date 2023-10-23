@@ -10,7 +10,7 @@ def targetDistance(observer, target):
     def planet_at(t):
         t._nutation_angles=iau2000b(t.tt)
         # Altitude Azimuth
-        return station(t).observe(target).apparent().altaz()[0].degrees >-0.8333 # Index value=0
+        return station(t).observe(target).apparent().altaz()[0].degrees > -0.8333 # Index value=0
     # how much it happens a day
     planet_at.rough_period = 0.5  # twice a day
     return planet_at
@@ -37,7 +37,7 @@ def doppler_shift(frequency, relativeVelocity):
 
     return shift in frequency due to doppler effect or shift
     """
-    return frequency- frequency* (relativeVelocity/3e8)   # velocity of light in m/s
+    return (frequency - frequency * (relativeVelocity/3e8))  # velocity of light in m/s
 
 
 """
